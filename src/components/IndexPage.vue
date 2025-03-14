@@ -272,13 +272,15 @@ onMounted(async () => {
     return showError(error)
   }
 
-  authClient.authStateManager.subscribe(authState => {
-    console.log('AuthState updated: ', authState)
+  authClient.authStateManager.subscribe(state => {
+    console.log('AuthState updated: ', state)
 
-    if (!authState.isAuthenticated) {
+    if (!state.isAuthenticated) {
       // If not authenticated, reset values related to user session
       updateAppState({ userInfo: null })
     }
+
+    authState.value = state
   })
 
   // Start the token auto-renew service
