@@ -136,19 +136,21 @@
     <v-container v-if="authenticatorData.length > 0">
       <v-row>
         <v-col>
-          Select the required authenticator type to proceed.
+          Select the required authenticator method to proceed.
         </v-col>
       </v-row>
 
-      <v-card v-for="method in authenticatorData">
-        <v-card-title>{{ method.label }}</v-card-title>
-        <v-card-actions>
-          <v-btn
-            color="primary"
-            @click="submitAuthenticatorDataForVerification(method.value)"
-          >Use</v-btn>
-        </v-card-actions>
-      </v-card>
+      <v-container class="d-flex">
+        <v-card v-for="method in authenticatorData" width="250px" class="ma-2">
+          <v-card-title>{{ method.label }}</v-card-title>
+          <v-card-actions>
+            <v-btn
+              color="primary"
+              @click="submitAuthenticatorDataForVerification(method.value)"
+            >Use</v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-container>
     </v-container>
 
     <v-container>
