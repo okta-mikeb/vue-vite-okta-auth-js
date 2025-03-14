@@ -332,6 +332,9 @@ async function cancel() {
 }
 
 async function verifyWithEmail() {
+  // Clear any current errors
+  error.value = null
+
   authenticatorData.value = []
 
   // TODO: Should re-prompt for an authenticator within the UI
