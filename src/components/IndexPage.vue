@@ -50,7 +50,7 @@
         type="error"></v-alert>
     </v-container>
 
-    <v-container v-if="isInputRequired('verificationCode')">
+    <v-container v-if="showOTP">
       <v-row>
         <v-col>
           <v-otp-input v-model="emailOTP">
@@ -179,6 +179,7 @@ const showSubmit = ref(false)
 const showCancel = ref(false)
 const showVerifyWithEmail = ref(false)
 
+const showOTP = ref(false)
 const emailOTP = ref('')
 const authenticators = ref([])
 const authenticatorData = ref([])
@@ -208,15 +209,6 @@ let authClient = null
 const appState = ref({})
 const authState = ref({})
 const loading = ref(false)
-
-function isInputRequired(name) {
-  if (!appState.value || !appState.value.transaction) {
-    return false
-  }
-
-  const nextStep = appState.value.transaction.nextStep
-  return nextStep.inputs.some(input => input.name === name)
-}
 
 function showError(msg) {
   console.error(msg)
@@ -458,6 +450,7 @@ function renderDynamicForm(transaction) {
   showSubmit.value = false
   showUsername.value = false
   showPassword.value = false
+  showOTP.value = false
 
   // Determine other button visibility
   showCancel.value = false
@@ -478,6 +471,10 @@ function renderDynamicForm(transaction) {
     // show password input
     showPassword.value = true
     showSubmit.value = true
+  }
+  if (inputs.some(input => input.name === 'verificationCode')) {
+    // show the OTP entry
+    showOTP.value = true
   }
 
   if (
