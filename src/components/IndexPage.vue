@@ -167,7 +167,7 @@
 </template>
 
 <script setup>
-import { computed, ref, onMounted } from 'vue'
+import { ref, onMounted } from 'vue'
 import { OktaAuth } from '@okta/okta-auth-js'
 
 const showUsername = ref(false)
@@ -288,35 +288,6 @@ onMounted(async () => {
     })
 })
 
-function showLoading() {
-  loading.value = true
-}
-
-function hideLoading() {
-  loading.value = false
-}
-
-function handleLoginRedirect() {
-  if (authClient.idx.isInteractionRequired()) {
-    return Promise.resolve()
-  }
-
-  return authClient.token.parseFromUrl().then(function (res) {
-    endAuthFlow(res.tokens)
-  }).catch(function (error) {
-    showError(error)
-  })
-}
-
-function getUserInfo() {
-  return authClient.token.getUserInfo().then(function (value) {
-    updateAppState({ userInfo: value })
-  }).catch(function (error) {
-    // This is expected when Okta SSO does not exist
-    showError(error)
-  })
-}
-
 function endAuthFlow(tokens) {
   authClient.tokenManager.setTokens(tokens)
 }
@@ -359,12 +330,10 @@ async function submit() {
 
   if (password.value.trim() !== '') {
     if (nextStep !== undefined && nextStep.authenticator?.type === 'password') {
-      // await authClient.idx.proceed({ password: password.value })
       await authClient.idx.authenticate({ password: password.value })
         .then(handleTransaction)
         .catch(showError)
     } else {
-      // await authClient.idx.proceed({
       await authClient.idx.authenticate({
         username: username.value,
         password: password.value
@@ -373,7 +342,6 @@ async function submit() {
         .catch(showError)
     }
   } else {
-    // await authClient.idx.proceed({ username: username.value })
     await authClient.idx.authenticate({ username: username.value })
       .then(handleTransaction)
       .catch((err) => {
@@ -424,6 +392,9 @@ async function submitAuthenticatorForVerification(authenticator) {
 
 async function submitAuthenticatorDataForVerification(method) {
   authenticatorOptions.methodType = method
+
+  // Clear authenticator data
+  authenticatorData.value = []
 
   await authClient.idx.proceed(authenticatorOptions)
     .then(handleTransaction)
